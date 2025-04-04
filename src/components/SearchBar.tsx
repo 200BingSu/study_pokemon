@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 
 const SearchBar = () => {
   return (
-    <div className="flex items-center justify-center gap-4 w-full">
+    <div className="flex items-center justify-center gap-4 w-full pt-5 pb-20">
       <Input
         placeholder="Who's That Pokėmon?"
         size="large"

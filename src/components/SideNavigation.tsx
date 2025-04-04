@@ -19,7 +19,7 @@ const SideNavigation = () => {
         />
       </div>
       {/* 메뉴 리스트 */}
-      {/* <ul className="w-full flex justify-start px-14">
+      {/* <ul className="w-full flex flex-col gap-4 justify-start px-14">
         {MenuList.map(item => {
           return (
             <li
