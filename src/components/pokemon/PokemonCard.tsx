@@ -1,22 +1,42 @@
-import { BringToFront, Cat, SendToBack, Sparkle } from "lucide-react";
+import {
+  BringToFront,
+  Cat,
+  Headphones,
+  SendToBack,
+  Sparkle,
+} from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { getApi } from "../../apis/pokemonAPI";
+import { PokeUrl } from "../../pages/Index";
+import { KoCode } from "../../types/Enum";
 import { Pokemon, PokemonSpecies } from "../../types/type";
 import { findKor } from "../../utils/translatetoKo";
-import { getApi } from "../../apis/pokemonAPI";
-import { KoCode } from "../../types/Enum";
+import TypeIcon from "./TypeIcon";
+
+interface Ability {
+  name: {
+    language: PokeUrl;
+    name: string;
+  };
+  dec: {
+    flavor_text: string;
+    language: PokeUrl;
+  };
+}
 
 interface PokemonCardProps {
   pokemonInfo: Pokemon;
   species: PokemonSpecies;
 }
+
 const PokemonCard = ({ pokemonInfo, species }: PokemonCardProps) => {
   // router
   const [searchParams] = useSearchParams();
   const id = Number(searchParams.get("id"));
   const name = searchParams.get("name");
   const [imgUrl, setImgUrl] = useState(pokemonInfo.sprites.front_default);
-  const [abilities, setAbilities] = useState([]);
+  const [abilities, setAbilities] = useState<Ability[]>([]);
 
   console.log("pokemonInfo", pokemonInfo);
   console.log("species", species);
@@ -49,7 +69,21 @@ const PokemonCard = ({ pokemonInfo, species }: PokemonCardProps) => {
       return koName.name;
     }
   };
-
+  // 울음소리
+  const playSound = (url: string) => {
+    const audio = new Audio(url);
+    audio.volume = 0.1;
+    audio.play().catch(error => {
+      console.error("Audio playback failed:", error);
+    });
+  };
+  // 키 포멧
+  const formatHeight = (height: number) => {
+    // 기본 10cm 단위(heifht 10=1m)
+    return `${height / 10}m`;
+  };
+  // 타입
+  const typeNameArr = pokemonInfo?.types?.map(item => item.type.name) || [];
   useEffect(() => {
     if (pokemonInfo?.sprites?.front_default) {
       setImgUrl(pokemonInfo.sprites.front_default);
@@ -147,24 +181,61 @@ const PokemonCard = ({ pokemonInfo, species }: PokemonCardProps) => {
       </section>
       {/* 정보 */}
       <section className="px-4 ">
-        <div className="grid grid-cols-2 gap-2 whitespace-nowrap overflow-hidden">
+        {/* ID */}
+        <div className="grid grid-cols-2 gap-2 whitespace-nowrap">
           <p className="text-slate-500 font-medium">ID:</p>
           <p className="text-slate-800">{id.toString().padStart(5, "0")}</p>
         </div>
-        <div className="grid grid-cols-2 gap-2 whitespace-nowrap overflow-hidden">
+        {/* 이름 */}
+        <div className="grid grid-cols-2 gap-2 whitespace-nowrap">
           <p className="text-slate-500 font-medium">NAME:</p>
           <p className="text-slate-800">{name}</p>
         </div>
-        <div className="grid grid-cols-2 gap-2 whitespace-nowrap overflow-hidden">
+        {/* 특성 */}
+        <div className="grid grid-cols-2 gap-2 whitespace-nowrap">
           <p className="text-slate-500 font-medium">특성:</p>
-          <p className="text-slate-800 flex items-center gap-1">
+          <div className="text-slate-800 flex items-center gap-1">
             {abilities?.map((item, index) => (
-              <span key={index}>
-                {/* {index === abilities.length - 1 ? item : `${item.name.name},`} */}
-                {item.name.name}
-              </span>
+              <p key={index} className="relative group">
+                <span>
+                  {index === abilities.length - 1
+                    ? `${item.name.name}`
+                    : `${item.name.name},`}
+                </span>
+                <span
+                  className="absolute -top-4 left-0 px-1 bg-slate-100 text-sm text-slate-600
+                  invisible group-hover:visible
+                  "
+                >
+                  {item.dec.flavor_text}
+                </span>
+              </p>
             ))}
-          </p>
+          </div>
+        </div>
+        {/* 울음 */}
+        <div className="grid grid-cols-2 gap-2 whitespace-nowrap items-center">
+          <p className="text-slate-500 font-medium">울음소리:</p>
+          <button
+            type="button"
+            onClick={() => playSound(pokemonInfo.cries.latest)}
+          >
+            <Headphones className="text-slate-800 w-5" />
+          </button>
+        </div>
+        {/* 키 */}
+        <div className="grid grid-cols-2 gap-2 whitespace-nowrap items-center">
+          <p className="text-slate-500 font-medium">높이:</p>
+          <p>{formatHeight(pokemonInfo.height)}</p>
+        </div>
+        {/* 타입 */}
+        <div className="grid grid-cols-2 gap-2 whitespace-nowrap items-center">
+          <p className="text-slate-500 font-medium">타입:</p>
+          <div className="flex items-center gap-1">
+            {typeNameArr?.map((item, index) => {
+              return <TypeIcon key={index} item={item} />;
+            })}
+          </div>
         </div>
       </section>
     </div>
