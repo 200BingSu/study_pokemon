@@ -6,10 +6,10 @@ const SideNavigation = () => {
   //router
   const navigate = useNavigate();
   return (
-    <div className="bg-blue-700 w-2/4 max-w-[300px] min-h-screen flex flex-col items-center ">
+    <div className="bg-blue-700 w-2/4 max-w-[300px] min-w-[250px] min-h-screen flex flex-col items-center ">
       {/* 로고 */}
       <div
-        className=" w-[24vw] max-w-[220px] pt-10 pb-12"
+        className=" w-[24vw] max-w-[220px] min-w-[210px] pt-10 pb-12"
         onClick={() => navigate("/")}
       >
         <img

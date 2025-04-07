@@ -29,7 +29,10 @@ function Index() {
   return (
     <div>
       {/* 기본 정보 */}
-      <PokemonCard pokemonInfo={pokemonInfo} species={species} />
+      <section className="flex items-center justify-center">
+        <PokemonCard pokemonInfo={pokemonInfo} species={species} />
+      </section>
+
       {/* species */}
     </div>
   );
